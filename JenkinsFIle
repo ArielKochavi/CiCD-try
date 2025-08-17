@@ -1,26 +1,32 @@
 pipeline {
     agent {
         docker {
-            image 'python:latest'
+            image 'python:3.11-alpine'
         }
+    }
+
+    triggers {
+        pollSCM('* * * * *') // בודק שינויים כל דקה
     }
 
     stages {
         stage('Build') {
             steps {
-                echo "Building..."
-                sh 'pip install -r requirements.txt'
+                echo "📦 Installing dependencies..."
+                sh 'python3 -m pip install -r requirements.txt'
             }
         }
+
         stage('Test') {
             steps {
-                echo "Testing..."
-                sh 'python app.py'
+                echo "🧪 Running tests..."
+                sh 'python3 app.py'
             }
         }
+
         stage('Deliver') {
             steps {
-                echo "Delivering..."
+                echo "🚀 Delivering..."
                 sh 'echo "doing delivery stuff..."'
             }
         }
