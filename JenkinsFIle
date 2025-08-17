@@ -1,5 +1,11 @@
 pipeline {
-    agent { label 'docker-agent-python' }
+    agent { 
+        docker{
+            image 'python:latest'
+
+        }
+
+     }
 
     triggers {
         pollSCM('* * * * *') // polls every minute, adjust if needed
