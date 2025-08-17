@@ -1,9 +1,8 @@
 pipeline {
-    agent any
-    
-
-    triggers {
-        pollSCM('* * * * *') // polls every minute
+    agent {
+        docker {
+            image 'python:latest'
+        }
     }
 
     stages {
@@ -16,7 +15,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Testing..."
-                sh 'python3 app.py'
+                sh 'python app.py'
             }
         }
         stage('Deliver') {
