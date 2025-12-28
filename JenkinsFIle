@@ -2,28 +2,24 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ArielKochavi/CiCD-try'
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("html-site:latest")
-                }
+                sh 'docker build -t html-site .'
             }
         }
 
-        stage('Run Container') {
+        stage('Deploy') {
             steps {
-                script {
-                    sh '''
-                    docker rm -f html-site || true
-                    docker run -d -p 8081:80 --name html-site html-site:latest
-                    '''
-                }
+                sh '''
+                docker rm -f html-site || true
+                docker run -d -p 8081:80 --name html-site html-site
+                '''
             }
         }
     }
