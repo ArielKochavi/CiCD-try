@@ -1,33 +1,29 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.11-alpine'
-        }
-    }
-
-    triggers {
-        pollSCM('* * * * *') // בודק שינויים כל דקה
-    }
+    agent any
 
     stages {
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                echo "📦 Installing dependencies..."
-                sh 'python3 -m pip install -r requirements.txt'
+                git branch: 'main', url: 'https://github.com/ArielKochavi/CiCD-try'
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                echo "🧪 Running tests..."
-                sh 'python3 app.py'
+                script {
+                    docker.build("html-site:latest")
+                }
             }
         }
 
-        stage('Deliver') {
+        stage('Run Container') {
             steps {
-                echo "🚀 Delivering..."
-                sh 'echo "doing delivery stuff..."'
+                script {
+                    sh '''
+                    docker rm -f html-site || true
+                    docker run -d -p 8081:80 --name html-site html-site:latest
+                    '''
+                }
             }
         }
     }
